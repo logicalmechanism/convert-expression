@@ -32,6 +32,14 @@ test small_pow_mod() {
   helper.powmod(2, 62, 3) > 0
 }
 
+test lovelace_pow_mod() {
+  let reduced_inject =
+    123456789
+  let public_constant =
+    helper.powmod(types.g, types.r + types.c * reduced_inject, types.q)
+  public_constant > 0
+}
+
 test big_pow_mod() {
   let x =
     2538512792311776

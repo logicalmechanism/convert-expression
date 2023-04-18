@@ -34,12 +34,14 @@ pub fn inject_validation(
     helper.powmod(types.g, types.r * ( redeemer.burn_constant + 1 ), types.q)
   let right_constant =
     helper.powmod(types.g, types.r * redeemer.mint_constant, types.q)
+  // create the left side and right side lists
   let leftside =
     list.push(redeemer.mint_ints, left_constant)
   let rightside0 =
     list.push(redeemer.burn_ints, right_constant)
   let rightside =
     list.push(rightside0, public_constant)
+  // calculate length at most 1 time
   let mint_name_length =
     list.length(redeemer.mint_names)
   let burn_name_length =

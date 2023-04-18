@@ -1,3 +1,4 @@
 wallets/
 tmp/
 utxos/
+py/__pycache__

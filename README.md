@@ -27,3 +27,35 @@ where $H$ is the sha3_256 hash function. The constants $g$, $r$, $c$, $q$, and $
 `This contract is research purposes only. Do not use.`
 
 A detailed [docs folder](documentation/summary.md) exists for further explaination.
+
+## Building
+
+The `start_info.json` file holds the starter token information.
+
+### Example start_info.json file
+
+```json
+{
+  "__comment1__": "This is the starter token for the lock contract",
+  "starterPid": "ac74c28dcc6b051133f28ebb38cebfaf569f73a0b19ac8b9752c3796",
+  "starterTkn": "01c0350934754552b043184ca68df84b9359dbff2fd410a5eef03f7611ebc9df"
+}
+```
+
+Run the `contract_build.sh` script to build the contract and autopopulate the datum. This script requires `aiken` on path to work.
+
+```bash
+./contract_build.sh
+```
+
+## Testing
+
+I will try to keep the tests up-to-date. Run the test suite with the command below.
+
+```bash
+aiken check
+```
+
+## Use
+
+A [scripts folder](scripts/README.md) exists for information.

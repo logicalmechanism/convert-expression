@@ -9,7 +9,6 @@ script_address=$(${cli} address build --payment-script-file ${script_path} ${net
 
 #
 seller_address=$(cat wallets/seller-wallet/payment.addr)
-buyer_address=$(cat wallets/buyer-wallet/payment.addr)
 reference_address=$(cat wallets/reference-wallet/payment.addr)
 collat_address=$(cat wallets/collat-wallet/payment.addr)
 
@@ -27,13 +26,6 @@ echo -e "\033[0m"
 echo -e "\033[1;36m Seller Address:" 
 echo -e "\n${seller_address}\n";
 ${cli} query utxo --address ${seller_address} ${network}
-echo -e "\033[0m"
-
-#
-echo -e "\033[1;32m Buyer Address:" 
-echo -e "\n${buyer_address}\n";
-${cli} query utxo --address ${buyer_address} ${network}
-${cli} query utxo --address ${buyer_address} ${network} --out-file tmp/buyer_utxo.json
 echo -e "\033[0m"
 
 #

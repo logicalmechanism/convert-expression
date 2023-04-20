@@ -166,7 +166,7 @@ pub fn prove_burn(
       burn_proofs,
       fn(i, n, p) {
         let num_hash =
-          int_to_hash(i)
+          int_to_hash(powmod(types.g, i, types.q))
         let combined =
           bytearray.concat(num_hash, p)
         // create the hash and modulo and cant be zero
@@ -182,7 +182,9 @@ pub fn prove_mint(mint_ints: List<Int>, mint_names: List<ByteArray>) -> Bool {
     list.map2(
       mint_ints,
       mint_names,
-      fn(i, n) { to_int(n) % i % types.qq == 0 && i > 1 && i < types.q },
+      fn(i, n) {
+        to_int(n) % powmod(types.g, i, types.q) % types.qq == 0 && i > 1 && i < types.q
+      },
     )
   list.all(outcomes, fn(n) { n == True })
 }
@@ -198,4 +200,8 @@ pub fn powmod(self: Int, e: Int, q: Int) -> Int {
   } else {
     self * powmod(self * self % q, ( e - 1 ) / 2, q) % q
   }
+}
+
+pub fn list_power_mod(lst: List<Int>) -> Int {
+  list.foldr(lst, fn(n, total) { total * powmod(types.g, n, types.q) }, 1) % types.q
 }

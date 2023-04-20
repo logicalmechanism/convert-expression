@@ -20,7 +20,7 @@ fi
 source .env
 
 inject_value=$1
-reduced_value="$((${inject_value} / 1000000))"
+reduced_value="$((${inject_value} / 1))"
 
 hidden_pid=$(cat ../hashes/policy.hash)
 

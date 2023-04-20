@@ -12,7 +12,7 @@ if [ "$1" -lt 0 ]; then
     exit 1
 fi
 
-if [ "$2" -lt 2 ]; then
+if [ "$2" -lt 0 ]; then
     echo 'Must Mint At Least Two Tokens'
     exit 1
 fi
@@ -20,7 +20,7 @@ source .env
 
 extract_value=$1
 
-reduced_extract="$((${extract_value} / 1000000))"
+# reduced_extract="$((${extract_value} / 1000000))"
 
 hidden_pid=$(cat ../hashes/policy.hash)
 

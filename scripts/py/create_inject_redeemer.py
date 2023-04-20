@@ -8,13 +8,16 @@ c = 561
 q = 9223372036854775783
 qq = 3000029
 
+def calc_num(value):
+    return pow(g, value, q)
+
 def product(nums):
     # initialize product variable to 1
     p = 1
 
     # iterate through each number in the list and multiply them
     for num in nums:
-        p *= num
+        p *= calc_num(num)
     return p
 
 
@@ -73,7 +76,7 @@ def list_byte_obj(l):
     return obj
 
 def redeemer(injection_value, extraction_value):
-    inject = pow(g, r + c*injection_value//1000000, q)
+    inject = pow(g, r + c*injection_value//1, q)
 
     # Create an empty dictionary to store the global object
     folder_path = "utxos/pending/"
@@ -89,7 +92,9 @@ def redeemer(injection_value, extraction_value):
     burn_proofs = []
     for tkn in burn_obj:
         K_j += burn_obj[tkn]['first_secret']
-        burn_ints.append(burn_obj[tkn]['public_number'])
+        pub = r*burn_obj[tkn]['first_secret'] + c*burn_obj[tkn]['value']
+        # burn_ints.append(burn_obj[tkn]['public_number'])
+        burn_ints.append(pub)
         name = burn_obj[tkn]['token_name']
         burn_names.append(name)
         burn_proofs.append(burn_obj[tkn]['second_secret'])
@@ -100,7 +105,9 @@ def redeemer(injection_value, extraction_value):
     mint_names = []
     for tkn in mint_obj:
         K_j += mint_obj[tkn]['first_secret']
-        mint_ints.append(mint_obj[tkn]['public_number'])
+        pub = r*mint_obj[tkn]['first_secret'] + c*mint_obj[tkn]['value']
+        # mint_ints.append(mint_obj[tkn]['public_number'])
+        mint_ints.append(pub)
         name = mint_obj[tkn]['token_name']
         mint_names.append(name)
         
@@ -111,11 +118,15 @@ def redeemer(injection_value, extraction_value):
     betaC = pow(g, r*(K_j), q)
     beta = K_j
 
-    check = (alphaC * product(mint_ints)) % q == (betaC * inject * product(burn_ints)) % q
+    left_side = [r*(K_i + 1)] + mint_ints
+    right_side = [r*(K_j)] + [r + c*injection_value] + burn_ints
+    # print(left_side)
+    # print(right_side)
+    check = (product(left_side)) % q == (product(right_side)) % q
     if check is True:
         for p, n in zip(mint_ints, mint_names):
-            if int(n, 16) % p % qq != 0:
-                print('BAD MINT')
+            if int(n, 16) % calc_num(p) % qq != 0:
+                print('BAD MINT NAME')
                 exit(1)
     else:
         print('BAD MINT')

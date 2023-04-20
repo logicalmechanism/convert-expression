@@ -29,13 +29,16 @@ def list_byte_obj(l):
         obj['list'].append(byte_obj(b))
     return obj
 
+def calc_num(value):
+    return pow(g, value, q)
+
 def product(nums):
     # initialize product variable to 1
     p = 1
 
     # iterate through each number in the list and multiply them
     for num in nums:
-        p *= num
+        p *= calc_num(num)
     return p
 
 
@@ -56,12 +59,11 @@ def get_pending(folder_path):
 def redeemer(extraction_value, nMints):
     owned_folder_path = './utxos/owned'
     pending_folder_path = "./utxos/pending/"
-    reduced = extraction_value//1000000
-    extract = pow(g, r + c*extraction_value//1000000, q)
-    moved = reduced + nMints
+    # extract = pow(g, r + c*extraction_value, q)
+    moved = extraction_value + nMints*1000000
     burn_obj = um.random_select(owned_folder_path, moved)
     total = um.total_value(burn_obj)
-    change = total - reduced
+    change = total - extraction_value
     out = sa.random_splits(change, nMints)
     fsh.save_all_utxos(out)
     mint_obj = get_pending(pending_folder_path)
@@ -73,7 +75,9 @@ def redeemer(extraction_value, nMints):
     burn_proofs = []
     for tkn in burn_obj:
         total_burn_constant += burn_obj[tkn]['first_secret']
-        burn_ints.append(burn_obj[tkn]['public_number'])
+        pub = r*burn_obj[tkn]['first_secret'] + c*burn_obj[tkn]['value']
+        # burn_ints.append(burn_obj[tkn]['public_number'])
+        burn_ints.append(pub)
         name = burn_obj[tkn]['token_name']
         burn_names.append(name)
         burn_proofs.append(burn_obj[tkn]['second_secret'])
@@ -84,7 +88,9 @@ def redeemer(extraction_value, nMints):
     mint_names = []
     for tkn in mint_obj:
         total_mint_constant += mint_obj[tkn]['first_secret']
-        mint_ints.append(mint_obj[tkn]['public_number'])
+        pub = r*mint_obj[tkn]['first_secret'] + c*mint_obj[tkn]['value']
+        # mint_ints.append(mint_obj[tkn]['public_number'])
+        mint_ints.append(pub)
         name = mint_obj[tkn]['token_name']
         mint_names.append(name)
 
@@ -93,12 +99,16 @@ def redeemer(extraction_value, nMints):
     alpha = total_mint_constant
     betaC = pow(g, r*(total_burn_constant), q)
     beta = total_burn_constant
-    check = (alphaC * product(burn_ints)) % q == (betaC *
-                                                 extract * product(mint_ints)) % q
+    
+    left_side = [r*(total_mint_constant + 1)] + burn_ints
+    right_side = [r*(total_burn_constant)] + [r + c*extraction_value] + mint_ints
+    # print(left_side)
+    # print(right_side)
+    check = (product(left_side)) % q == (product(right_side)) % q
     if check is True:
         for p, n in zip(mint_ints, mint_names):
-            if int(n, 16) % p % qq != 0:
-                print('BAD MINT')
+            if int(n, 16) % calc_num(p) % qq != 0:
+                print('BAD MINT NAME')
                 exit(1)
     else:
         print('BAD MINT')

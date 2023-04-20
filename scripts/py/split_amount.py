@@ -13,5 +13,7 @@ def random_splits(n, k):
 
 
 if __name__ == "__main__":
-    split = random_splits(125, 11)
+    value = 125000000
+    split = random_splits(value, 11)
     print(split)
+    print(sum(split) == value)

@@ -21,19 +21,16 @@ pub fn inject_validation(
       |> value.flatten()
   let injection =
     value.from_lovelace(redeemer.inject)
-  // doing the real value will take too long
-  let reduced_inject =
-    redeemer.inject / 1000000
   let public_constant =
-    helper.powmod(types.g, types.r + types.c * reduced_inject, types.q)
+    types.r + types.c * redeemer.inject
   // add whats being validated to the injected amt
   let cont_value =
     value.add(validating_value, injection)
   // do the right and left constants
   let left_constant =
-    helper.powmod(types.g, types.r * ( redeemer.burn_constant + 1 ), types.q)
+    types.r * ( redeemer.burn_constant + 1 )
   let right_constant =
-    helper.powmod(types.g, types.r * redeemer.mint_constant, types.q)
+    types.r * redeemer.mint_constant
   // create the left side and right side lists
   let leftside =
     list.push(redeemer.mint_ints, left_constant)
@@ -52,19 +49,19 @@ pub fn inject_validation(
       redeemer.mint_constant < types.q,
       redeemer.burn_constant < types.q,
       // transformation equation
-      helper.list_pow_mod(leftside) == helper.list_pow_mod(rightside),
+      helper.list_power_mod(leftside) == helper.list_power_mod(rightside),
       // conservation equation
       helper.find_exact_payout(script_addr, cont_value, tx.outputs),
       // everything being minted is minted
       list.all(
         redeemer.mint_names,
         fn(n) { helper.correct_mint(mint, pid, n, 1) == True },
-      ),
+      )?,
       // everything being burned is burned
       list.all(
         redeemer.burn_names,
         fn(n) { helper.correct_mint(mint, pid, n, -1) == True },
-      ),
+      )?,
       // logical mints and burns
       list.length(redeemer.mint_ints) == mint_name_length,
       // logical mints and burns
@@ -90,9 +87,7 @@ pub fn inject_validation(
       // only cont 1 output
       helper.count_script_outputs(tx.outputs, script_addr, 0) == 1,
       // must inject at least 1 ADA into the contract
-      redeemer.inject >= mint_name_length * 2000000,
-      // must have integer amount of ADA
-      reduced_inject * 1000000 == redeemer.inject,
+      redeemer.inject >= mint_name_length * 1000000,
     ],
   )
 }

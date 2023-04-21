@@ -1,4 +1,4 @@
-# Covert Expression
+# Convert Expression
 
 This contract is designed to mint or burns NFTs that satisfy the equations below. Each NFT represents a real value of ada that is hidden using a variation of Schnorr signatures. The values should remain hidden and be computationally difficult to reveal or fake.
 

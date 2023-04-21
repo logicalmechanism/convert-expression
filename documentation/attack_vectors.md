@@ -23,10 +23,10 @@ The problem changes into solving for $k$. This solution scales with $q$ so large
 
 The idea is injecting $b$ ada into the contract and minting two tokens but of the tokens will be faked so that the value is different.
 
-$$ g^{r} g^{z_{0}} \alpha = g^{z_{b}} g^{rK_{01}} \mod q $$
+$$ g^{r} g^{z_{0}} g^{z_{1}}  = g^{z_{b}} g^{rK_{01}} \mod q $$
 
 For honest, $K_{j}$, $K_{i}$, and $b$, inputs there is only one solution to $\alpha$ within $q$ that satisfies the equation. The issue comes when b is set to zero. The equation reduces to
 
-$$g^{z_{0}} \alpha =  g^{rK_{01}} \mod q $$
+$$g^{z_{0}} g^{z_{1}} =  g^{x} \mod q $$
 
-Which does have another solution that isn't real.
+Which does not have a solution that isn't the real values.

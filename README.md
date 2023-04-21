@@ -24,8 +24,6 @@ $$n \mod v \mod q' = 0$$
 
 where $H$ is the sha3_256 hash function. The constants $g$, $r$, $c$, $q$, and $q'$ are public. The values $v$, $\lambda$, $\alpha$, and $m$ are secret.
 
-`This contract is research purposes only. Do not use.`
-
 A detailed [docs folder](documentation/summary.md) exists for further explaination.
 
 ## Building
@@ -42,10 +40,10 @@ The `start_info.json` file holds the starter token information.
 }
 ```
 
-Run the `contract_build.sh` script to build the contract and autopopulate the datum. This script requires `aiken` on path to work.
+Run the `complete_build.sh` script to build the contract and autopopulate the datum. This script requires `aiken` on path to work.
 
 ```bash
-./contract_build.sh
+./complete_build.sh
 ```
 
 ## Testing
@@ -58,4 +56,15 @@ aiken check
 
 ## Use
 
-A [scripts folder](scripts/README.md) exists for information.
+A [scripts folder](scripts/README.md) exists for more information on how to use the contract. There are two endpoints inside the contract, injection and extraction. These endpoints handle injection and extraction of lovelace and the minting and burning of tokens.
+
+The inject ADA endpoint will send ADA into the contract and mint N tokens back to your wallet. The larger the N the harder it is to guess the values the tokens represent.
+![ADA Injection](images/injection.png)
+
+The extract ADA endpoint will send M tokens and extract K ADA then mint N tokens back to your wallet. The contract expects tokens to be burned to get value out but for security more tokens must also be minted.
+![ADA Extraction](images/extraction.png)
+
+These tokens can be traded like normal tokens but the token information needs to be communicated in a secure off-chain channel. Without the token information a token can not be burned.
+![Token Exchange](images/token_exchange.png)
+
+`This contract is research purposes only. Do not use.`

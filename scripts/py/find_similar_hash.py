@@ -37,7 +37,7 @@ def get_msg_and_tkn(num):
     
     while True:
         # find a secret that works
-        secret = secrets.randbelow(pow(2,63)-1)
+        secret = secrets.randbelow(pow(2,64)-1)
 
         s_hash = print_hex(secret)
         
@@ -52,8 +52,8 @@ def get_msg_and_tkn(num):
             return s_hash, token_name
 
 def get_value_info(value):
-    # random select integer between 1 and 10^16
-    first_secret = secrets.randbelow(pow(10,16))
+    # random select integer between 1 and 10^18
+    first_secret = secrets.randbelow(pow(10,17))
     public_number = print_num(value, first_secret)
     second_secret, token_name = get_msg_and_tkn(public_number)
     obj = {

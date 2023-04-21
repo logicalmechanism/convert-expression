@@ -61,7 +61,7 @@ A [scripts folder](scripts/README.md) exists for more information on how to use 
 The inject ADA endpoint will send ADA into the contract and mint N tokens back to your wallet. The larger the N the harder it is to guess the values the tokens represent.
 ![ADA Injection](images/injection.png)
 
-The extract ADA endpoint will send M tokens and extract K ADA then mint N tokens back to your wallet. The contract expects tokens to be burned to get value out but for security more tokens must also be minted.
+The extract ADA endpoint will burn M tokens and extract K ADA then mint N tokens back to your wallet. The contract expects tokens to be burned to extract value out of the contract but for security more tokens must also be minted.
 ![ADA Extraction](images/extraction.png)
 
 These tokens can be traded like normal tokens but the token information needs to be communicated in a secure off-chain channel. Without the token information a token can not be burned.

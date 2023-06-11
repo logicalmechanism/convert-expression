@@ -4,9 +4,13 @@ set -e
 mkdir -p contracts
 mkdir -p hashes
 
+rm contracts/* || True
+rm hashes/* || True
+
 # build out the entire script
 echo -e "\033[1;34m\nBuilding Contracts\n\033[0m"
-aiken build
+# aiken build
+aiken build --keep-traces
 
 # the reference token
 pid=$(jq -r '.starterPid' ./start_info.json)

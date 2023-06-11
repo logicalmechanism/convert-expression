@@ -76,9 +76,9 @@ validator(starter_pid: ByteArray, starter_tkn: ByteArray) {
                 count.outputs_by_addr(tx.outputs, this_addr, 1),
                 // conservation equation
                 payout.exact(this_addr, cont_value, tx.outputs),
-                // other validation logic
+                // math validation logic
                 extract_validator.extract_math_validation(extract_data),
-                // other validation logic
+                // mint validation logic
                 extract_validator.extract_mint_validation(
                   tx.mint,
                   extract_data,

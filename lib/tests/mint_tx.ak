@@ -5,20 +5,19 @@ use aiken/transaction.{
   Transaction, TransactionId,
 }
 use aiken/transaction/credential.{Address}
-use aiken/transaction/value.{Value}
-use hidden_contract/helper
-use hidden_contract/types.{Datum}
+use aiken/transaction/value.{MintedValue}
+use assist/addresses
+use convert_expression/types.{Datum}
 
 pub fn datum_a() -> Datum {
-  let pid =
-    #"acab"
+  let pid = #"acab"
   Datum { pid }
 }
 
 pub fn mint_tx(
   script_input_addr: Address,
   output_addr: Address,
-  output_value: Value,
+  output_value: MintedValue,
 ) -> Transaction {
   let tx =
     Transaction {
@@ -40,7 +39,7 @@ pub fn mint_tx(
       outputs: [
         Output {
           address: output_addr,
-          value: output_value,
+          value: output_value |> value.from_minted_value(),
           datum: NoDatum,
           reference_script: None,
         },
@@ -68,13 +67,12 @@ pub fn mint_tx(
 }
 
 pub fn mint_context(script_addr: Address, pid: ByteArray) -> ScriptContext {
-  let out_addr =
-    helper.create_wallet_address(#"", #"")
+  let out_addr = addresses.create_address(#"", #"")
   ScriptContext {
     transaction: mint_tx(
       script_addr,
       out_addr,
-      value.from_asset(#"beef", #"face", 1),
+      value.from_asset(#"beef", #"face", 1) |> value.to_minted_value(),
     ),
     purpose: Mint(pid),
   }

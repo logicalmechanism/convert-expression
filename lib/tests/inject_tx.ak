@@ -5,12 +5,11 @@ use aiken/transaction.{
   TransactionId,
 }
 use aiken/transaction/credential.{Address}
-use aiken/transaction/value.{Value}
-use hidden_contract/types.{Datum}
+use aiken/transaction/value.{MintedValue, Value}
+use convert_expression/types.{Datum}
 
 pub fn datum_a() -> Datum {
-  let pid =
-    #"acab"
+  let pid = #"acab"
   Datum { pid }
 }
 
@@ -18,7 +17,7 @@ pub fn inject_tx(
   script_input_addr: Address,
   script_output_addr: Address,
   output_value: Value,
-  mint_value: Value,
+  mint_value: MintedValue,
 ) -> Transaction {
   let tx =
     Transaction {

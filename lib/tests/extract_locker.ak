@@ -1,33 +1,34 @@
-use aiken/transaction.{OutputReference, TransactionId}
+use aiken/list
 use aiken/transaction/value
-use hidden_contract/extract_validator
-use hidden_contract/helper
-use hidden_contract/types.{ExtractData}
+use assist/addresses
+use convert_expression/extract_validator
+use convert_expression/types.{ExtractData}
 use tests/extract_tx
 
 test good_simple_extract() {
-  let script_addr =
-    helper.create_script_address(#"", #"")
+  let script_addr = addresses.create_script_address(#"", #"")
   let mint_value =
-    value.add(
-      value.from_asset(
-        #"acab",
-        #"7abf1f78c5a5cf5ae4a8b3d43d31d46d34ec7924ae1ff1bef26b7305135d9bb0",
-        -1,
-      ),
-      value.add(
-        value.from_asset(
-          #"acab",
-          #"815ea4e9a055e6ce9d6f2112234462f1fa57e7dd23dc17ff176b4e48a5704a9e",
-          1,
-        ),
-        value.from_asset(
-          #"acab",
-          #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
-          1,
-        ),
-      ),
+    value.from_asset(
+      #"acab",
+      #"7abf1f78c5a5cf5ae4a8b3d43d31d46d34ec7924ae1ff1bef26b7305135d9bb0",
+      -1,
     )
+      |> value.merge(
+           value.from_asset(
+             #"acab",
+             #"815ea4e9a055e6ce9d6f2112234462f1fa57e7dd23dc17ff176b4e48a5704a9e",
+             1,
+           ),
+         )
+      |> value.merge(
+           value.from_asset(
+             #"acab",
+             #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
+             1,
+           ),
+         )
+      |> value.to_minted_value()
+
   let tx =
     extract_tx.extract_tx(
       script_addr,
@@ -35,13 +36,6 @@ test good_simple_extract() {
       value.from_lovelace(130000000),
       mint_value,
     )
-  let output_reference =
-    OutputReference {
-      transaction_id: TransactionId { hash: #"" },
-      output_index: 0,
-    }
-  let validating_input =
-    helper.get_validating_input(tx.inputs, output_reference)
   let redeemer =
     ExtractData {
       mint_constant: 387,
@@ -60,32 +54,37 @@ test good_simple_extract() {
         #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
       ],
     }
-  extract_validator.extract_validation(redeemer, tx, validating_input, #"acab") == True
+  list.and(
+    [
+      extract_validator.extract_math_validation(redeemer) == True,
+      extract_validator.extract_mint_validation(tx.mint, redeemer, #"acab") == True,
+    ],
+  )
 }
 
 test bad_pid_simple_extract() {
-  let script_addr =
-    helper.create_script_address(#"", #"")
+  let script_addr = addresses.create_script_address(#"", #"")
   let mint_value =
-    value.add(
-      value.from_asset(
-        #"acab",
-        #"7abf1f78c5a5cf5ae4a8b3d43d31d46d34ec7924ae1ff1bef26b7305135d9bb0",
-        -1,
-      ),
-      value.add(
-        value.from_asset(
-          #"acab",
-          #"815ea4e9a055e6ce9d6f2112234462f1fa57e7dd23dc17ff176b4e48a5704a9e",
-          1,
-        ),
-        value.from_asset(
-          #"acab",
-          #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
-          1,
-        ),
-      ),
+    value.from_asset(
+      #"acab",
+      #"7abf1f78c5a5cf5ae4a8b3d43d31d46d34ec7924ae1ff1bef26b7305135d9bb0",
+      -1,
     )
+      |> value.merge(
+           value.from_asset(
+             #"acab",
+             #"815ea4e9a055e6ce9d6f2112234462f1fa57e7dd23dc17ff176b4e48a5704a9e",
+             1,
+           ),
+         )
+      |> value.merge(
+           value.from_asset(
+             #"acab",
+             #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
+             1,
+           ),
+         )
+      |> value.to_minted_value()
   let tx =
     extract_tx.extract_tx(
       script_addr,
@@ -93,13 +92,6 @@ test bad_pid_simple_extract() {
       value.from_lovelace(130000000),
       mint_value,
     )
-  let output_reference =
-    OutputReference {
-      transaction_id: TransactionId { hash: #"" },
-      output_index: 0,
-    }
-  let validating_input =
-    helper.get_validating_input(tx.inputs, output_reference)
   let redeemer =
     ExtractData {
       mint_constant: 387,
@@ -118,5 +110,10 @@ test bad_pid_simple_extract() {
         #"057e62f5e8ccab99f0d74eea003c0b93095d32c75625ee1b4302f44c8c74bcf0",
       ],
     }
-  extract_validator.extract_validation(redeemer, tx, validating_input, #"beef") == False
+  list.and(
+    [
+      extract_validator.extract_math_validation(redeemer) == False,
+      extract_validator.extract_mint_validation(tx.mint, redeemer, #"acab") == False,
+    ],
+  )
 }

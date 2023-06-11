@@ -1,11 +1,13 @@
-use hidden_contract/helper
+use assist/maths
+use convert_expression/minting
+use convert_expression/types
 
 test empty_prove_burn() {
-  helper.prove_burn([], [], []) == True
+  minting.prove_burn([], [], []) == True
 }
 
 test single_burn() {
-  helper.prove_burn(
+  minting.prove_burn(
     [1497],
     [#"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd"],
     [#"c904f095ab5451515064fc31ff7c818d36a9287d80b6e147d220c0cbf7019582"],
@@ -13,7 +15,7 @@ test single_burn() {
 }
 
 test multiple_burn() {
-  helper.prove_burn(
+  minting.prove_burn(
     [1497, 376],
     [
       #"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd",
@@ -27,18 +29,18 @@ test multiple_burn() {
 }
 
 test empty_prove_mint() {
-  helper.prove_mint([], []) == True
+  minting.prove_mint([], []) == True
 }
 
 test single_mint() {
-  helper.prove_mint(
+  minting.prove_mint(
     [1497],
     [#"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd"],
   ) == True
 }
 
 test multiple_mint() {
-  helper.prove_mint(
+  minting.prove_mint(
     [1497, 376],
     [
       #"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd",
@@ -48,7 +50,11 @@ test multiple_mint() {
 }
 
 test empty_list_of_mints_and_burns() {
-  helper.list_pow_mod([]) == helper.list_pow_mod([])
+  maths.list_powmod([], types.g, types.q) == maths.list_powmod(
+    [],
+    types.g,
+    types.q,
+  )
 }
 
 test list_of_mints_and_burns() {
@@ -56,7 +62,11 @@ test list_of_mints_and_burns() {
     [2835595436209736255, 2997532379697512730, 8494482003699531620]
   let right =
     [4702576305290162895, 4812563786666023419, 8848806375754731735]
-  helper.list_pow_mod(left) == helper.list_pow_mod(right)
+  maths.list_powmod(left, types.g, types.q) == maths.list_powmod(
+    right,
+    types.g,
+    types.q,
+  )
 }
 
 test list_of_only_mints() {
@@ -64,7 +74,11 @@ test list_of_only_mints() {
     [3688371627213947, 3875644491920815627, 6710886400]
   let right =
     [2167002592491288770, 8929118933177322057]
-  helper.list_pow_mod(left) == helper.list_pow_mod(right)
+  maths.list_powmod(left, types.g, types.q) == maths.list_powmod(
+    right,
+    types.g,
+    types.q,
+  )
 }
 
 test list_for_extraction() {
@@ -75,7 +89,11 @@ test list_for_extraction() {
       7478865128743298826, 7422722409375585999, 6459881879562207830,
       8111245232363053438,
     ]
-  helper.list_pow_mod(left) == helper.list_pow_mod(right)
+  maths.list_powmod(left, types.g, types.q) == maths.list_powmod(
+    right,
+    types.g,
+    types.q,
+  )
 }
 
 test list_for_extraction2() {
@@ -83,15 +101,15 @@ test list_for_extraction2() {
     [664, 387]
   let right =
     [23, 451, 1039, 1539]
-  helper.list_pow_mod(left) != helper.list_pow_mod(right)
-}
-
-test correct_to_int() {
-  helper.to_int(#"acab") == 44203
+  maths.list_powmod(left, types.g, types.q) != maths.list_powmod(
+    right,
+    types.g,
+    types.q,
+  )
 }
 
 test correct_int_to_hash() {
-  helper.int_to_hash(0) == #"f9e2eaaa42d9fe9e558a9b8ef1bf366f190aacaa83bad2641ee106e9041096e4"
+  minting.int_to_hash(0) == #"f9e2eaaa42d9fe9e558a9b8ef1bf366f190aacaa83bad2641ee106e9041096e4"
 }
 
 test prove_good_mint() {
@@ -103,7 +121,7 @@ test prove_good_mint() {
       #"d441cd540b03015e009a12422724c7bdb0abcc6650c4bf64b4ffc2f3926cfde3",
       #"d47b6296253ba209ac46ad9bc9582c665822dee0f44632d712eda963607267b1",
     ]
-  helper.prove_mint(ints, strings)
+  minting.prove_mint(ints, strings)
 }
 
 test prove_good_burn() {
@@ -121,7 +139,7 @@ test prove_good_burn() {
       #"22ee6873d2dfd3be7d968100d019e92c7d31d7dcf3128c4a5466a9903de0929d",
       #"a08f05aaff350f6891724733150af4a88c7d361208f274ad49873c4090784850",
     ]
-  helper.prove_burn(ints, strings, proofs)
+  minting.prove_burn(ints, strings, proofs)
 }
 
 test list_power_mod_good() {
@@ -129,5 +147,9 @@ test list_power_mod_good() {
     [91, 499319296258426758, 371533020831606146, 637880808202577067]
   let r =
     [1508733114072609971, 11220000091]
-  helper.list_power_mod(l) == helper.list_power_mod(r)
+  maths.list_powmod(l, types.g, types.q) == maths.list_powmod(
+    r,
+    types.g,
+    types.q,
+  )
 }

@@ -1,10 +1,13 @@
 use aiken/list
 use aiken/transaction.{ScriptContext, Spend}
 use aiken/transaction/value
-use hidden_contract/extract_validator
-use hidden_contract/helper
-use hidden_contract/inject_validator
-use hidden_contract/types.{Datum, Extract, Inject, LockRedeemer}
+use assist/count
+use assist/find
+use assist/payout
+use assist/values
+use convert_expression/extract_validator
+use convert_expression/inject_validator
+use convert_expression/types.{Datum, Extract, Inject, LockRedeemer}
 
 validator(starter_pid: ByteArray, starter_tkn: ByteArray) {
   fn params(
@@ -14,57 +17,79 @@ validator(starter_pid: ByteArray, starter_tkn: ByteArray) {
   ) -> Bool {
     when context.purpose is {
       Spend(output_reference) -> {
-        // used by both redeemers
-        let tx =
-          context.transaction
-        let validating_input =
-          helper.get_validating_input(tx.inputs, output_reference)
-        let validating_value =
-          validating_input.output.value
+        // This transaction being validated
+        let tx = context.transaction
+        let this_input = find.input_by_ref(tx.inputs, output_reference)
+        let this_value = this_input.output.value
+        let this_addr = this_input.output.address
         // UTxO must hold the starter token
         let value_check =
-          value.quantity_of(validating_value, starter_pid, starter_tkn) == 1
+          values.prove_exact_nft(starter_pid, starter_tkn, this_value)
         expect cont_datum: Datum =
-          helper.get_outbound_datum(tx, validating_input)
+          find.output_datum_by_addr(tx.outputs, this_addr)
+        // the value continuing to the contract
         when redeemer is {
           // add in ada into the contract
-          Inject(inject_data) ->
+          Inject(inject_data) -> {
+            let cont_value =
+              value.merge(this_value, value.from_lovelace(inject_data.inject))
             list.and(
               [
                 // must hold starter nft
                 value_check,
                 // datum cant change
                 datum == cont_datum,
-                // other validation logic
-                inject_validator.inject_validation(
+                // only spend 1 input
+                count.inputs_by_addr(tx.inputs, this_addr, 1),
+                // only cont 1 output
+                count.outputs_by_addr(tx.outputs, this_addr, 1),
+                // conservation equation
+                payout.exact(this_addr, cont_value, tx.outputs),
+                // math validation logic
+                inject_validator.inject_math_validation(inject_data),
+                // mint validation logic
+                inject_validator.inject_mint_validation(
+                  tx.mint,
                   inject_data,
-                  tx,
-                  validating_input,
                   datum.pid,
                 ),
               ],
             )
+          }
+
           // take ada out of the contract
-          Extract(extract_data) ->
+          Extract(extract_data) -> {
+            let cont_value =
+              value.merge(
+                this_value,
+                value.from_lovelace(extract_data.extract) |> value.negate(),
+              )
             list.and(
               [
                 // must hold starter nft
                 value_check,
                 // datum cant change
                 datum == cont_datum,
+                // only spend 1 input
+                count.inputs_by_addr(tx.inputs, this_addr, 1),
+                // only cont 1 output
+                count.outputs_by_addr(tx.outputs, this_addr, 1),
+                // conservation equation
+                payout.exact(this_addr, cont_value, tx.outputs),
                 // other validation logic
-                extract_validator.extract_validation(
+                extract_validator.extract_math_validation(extract_data),
+                // other validation logic
+                extract_validator.extract_mint_validation(
+                  tx.mint,
                   extract_data,
-                  tx,
-                  validating_input,
                   datum.pid,
                 ),
               ],
             )
+          }
         }
       }
-      _ ->
-        False
+      _ -> False
     }
   }
 }

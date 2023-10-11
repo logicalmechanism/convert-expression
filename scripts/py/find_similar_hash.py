@@ -1,8 +1,8 @@
-import hashlib
-import random
 import binascii
+import hashlib
 import json
 import math
+import random
 import secrets
 
 # system constants
@@ -13,7 +13,8 @@ q = 9223372036854775783
 qq = 3000029
 
 def print_num(value, secret):
-    return pow(g, r*secret + c * value, q)
+    return r * secret + c * value
+    # return pow(g, r*secret + c * value, q)
 
 def print_token(txHash):
     txBytes = binascii.unhexlify(txHash)
@@ -73,124 +74,139 @@ def save_all_utxos(list_of_values):
             json.dump(obj, fp)
 
 if __name__ == "__main__":
-    value = secrets.randbelow(1024) + 1
-    print(f"The hidden value to prove is {value}")
+    # value = secrets.randbelow(1024) + 1
+    # print(f"The hidden value to prove is {value}")
+    
+    # first_secret = secrets.randbelow(pow(10,16))
+    
+    value = 760
+    first_secret = 123456789
+    public_number = print_num(value, first_secret)
+    print(public_number)
+    input_str = str(public_number)
+    hex_str = binascii.hexlify(input_str.encode()).decode()
+    print(hex_str)
+    
+    num_hash = print_hex(public_number)
+    print(f'The number hash {num_hash}')
+    second_secret, token_name = get_msg_and_tkn(public_number)
 
-    obj = get_value_info(value)
-    num = obj['public_number']
-    first_secret = obj['first_secret']
-    second_secret = obj['second_secret']
-    token_name = obj['token_name']
+    # obj = get_value_info(value)
+    # num = obj['public_number']
+    # first_secret = obj['first_secret']
+    # second_secret = obj['second_secret']
+    # token_name = obj['token_name']
     
     
-    print(f"The first secret is {first_secret}")
+    # print(f"The first secret is {first_secret}")
     # num = pow(g, r*secret + c * value, q)
-    print(f'The secret number is z = {r}*{first_secret} + {c}*{value}')
-    print(f'The public value is {g}^z mod {q} = ', num)
+    # print(f'The secret number is z = {r}*{first_secret} + {c}*{value}, {r*first_secret + c*value}')
+    print(f'The secret number is z = {public_number}')
+    # print(f'The public value is {g}^z mod {q} = ', num)
     # second_secret, token_name = get_msg_and_tkn(num)
     print(f"The second secret is {second_secret}")
     print(f"The token name must be {token_name}")
-    tval = int(token_name, 16)
-    check = tval % num % qq == 0
-    print(f"because {tval} % {num} % {qq} == 0 is {check}")
+    # tval = int(token_name, 16)
+    # check = tval % num % qq == 0
+    # print(f"because {tval} % {num} % {qq} == 0 is {check}")
     
     exit()
-    print("INJECT")
-    mints = [15, 15]
-    burns = [15]
-    inject = 15
+    # print("INJECT")
+    # mints = [15, 15]
+    # burns = [15]
+    # inject = 15
 
-    left = []
-    left_secrets = []
+    # left = []
+    # left_secrets = []
 
-    right = []
-    right_secrets = []
+    # right = []
+    # right_secrets = []
 
-    for b in burns:
-        print()
-        secret = random.randint(1,pow(10,16))
-        num = print_num(b, secret)
-        second_secret, token_name = get_msg_and_tkn(num)
-        print(f"The value {b} and the first secret {secret}")
-        print(f"The burn num is {num}")
-        print(f"The second secret is {second_secret}")
-        print(f"The token name is {token_name}")
+    # for b in burns:
+    #     print()
+    #     secret = random.randint(1,pow(10,16))
+    #     num = print_num(b, secret)
+    #     second_secret, token_name = get_msg_and_tkn(num)
+    #     print(f"The value {b} and the first secret {secret}")
+    #     print(f"The burn num is {num}")
+    #     print(f"The second secret is {second_secret}")
+    #     print(f"The token name is {token_name}")
 
-        right.append(num)
-        right_secrets.append(secret)
+    #     right.append(num)
+    #     right_secrets.append(secret)
 
-    for m in mints:
-        print()
-        secret = random.randint(1,pow(10,16))
-        num = print_num(m, secret)
-        second_secret, token_name = get_msg_and_tkn(num)
-        print(f"The value {m} and the first secret {secret}")
-        print(f"The mint num is {num}")
-        print(f"The second secret is {second_secret}")
-        print(f"The token name is {token_name}")
+    # for m in mints:
+    #     print()
+    #     secret = random.randint(1,pow(10,16))
+    #     num = print_num(m, secret)
+    #     second_secret, token_name = get_msg_and_tkn(num)
+    #     print(f"The value {m} and the first secret {secret}")
+    #     print(f"The mint num is {num}")
+    #     print(f"The second secret is {second_secret}")
+    #     print(f"The token name is {token_name}")
 
-        left.append(num)
-        left_secrets.append(secret)
+    #     left.append(num)
+    #     left_secrets.append(secret)
 
-    print()
-    print(f"Inject Value {print_num(inject, 1)}")
-    right.append(print_num(inject, 1))
+    # print()
+    # print(f"Inject Value {print_num(inject, 1)}")
+    # right.append(print_num(inject, 1))
 
-    print(f"left constant {print_num(0, sum(right_secrets)+1)}")
-    left.append(print_num(0, sum(right_secrets)+1))
+    # print(f"left constant {print_num(0, sum(right_secrets)+1)}")
+    # left.append(print_num(0, sum(right_secrets)+1))
 
-    print(f"right constant {print_num(0, sum(left_secrets))}")
-    right.append(print_num(0, sum(left_secrets)))
+    # print(f"right constant {print_num(0, sum(left_secrets))}")
+    # right.append(print_num(0, sum(left_secrets)))
 
-    print(left,)
-    print(right)
-    print()
-    print("EXTRACT")
-    mints = [15, 15]
-    burns = [50]
-    extract = 20
+    # print(left,)
+    # print(right)
+    # print()
+    # print("EXTRACT")
+    # mints = [15, 15]
+    # burns = [50]
+    # extract = 20
 
-    left = []
-    left_secrets = []
+    # left = []
+    # left_secrets = []
 
-    right = []
-    right_secrets = []
+    # right = []
+    # right_secrets = []
 
-    for b in burns:
-        print()
-        secret = random.randint(1,pow(10,16))
-        num = print_num(b, secret)
-        second_secret, token_name = get_msg_and_tkn(num)
-        print(f"The value {b} and the first secret {secret}")
-        print(f"The burn num is {num}")
-        print(f"The second secret is {second_secret}")
-        print(f"The token name is {token_name}")
+    # for b in burns:
+    #     print()
+    #     secret = random.randint(1,pow(10,16))
+    #     num = print_num(b, secret)
+    #     second_secret, token_name = get_msg_and_tkn(num)
+    #     print(f"The value {b} and the first secret {secret}")
+    #     print(f"The burn num is {num}")
+    #     print(f"The second secret is {second_secret}")
+    #     print(f"The token name is {token_name}")
 
-        left.append(num)
-        left_secrets.append(secret)
+    #     left.append(num)
+    #     left_secrets.append(secret)
 
-    for m in mints:
-        print()
-        secret = random.randint(1,pow(10,16))
-        num = print_num(m, secret)
-        second_secret, token_name = get_msg_and_tkn(num)
-        print(f"The value {m} and the first secret {secret}")
-        print(f"The mint num is {num}")
-        print(f"The second secret is {second_secret}")
-        print(f"The token name is {token_name}")
+    # for m in mints:
+    #     print()
+    #     secret = random.randint(1,pow(10,16))
+    #     num = print_num(m, secret)
+    #     second_secret, token_name = get_msg_and_tkn(num)
+    #     print(f"The value {m} and the first secret {secret}")
+    #     print(f"The mint num is {num}")
+    #     print(f"The second secret is {second_secret}")
+    #     print(f"The token name is {token_name}")
 
-        right.append(num)
-        right_secrets.append(secret)
+    #     right.append(num)
+    #     right_secrets.append(secret)
 
-    print()
-    print(f"Extract Value {print_num(extract, 1)}")
-    right.append(print_num(extract, 1))
+    # print()
+    # print(f"Extract Value {print_num(extract, 1)}")
+    # right.append(print_num(extract, 1))
 
-    print(f"left constant {print_num(0, sum(right_secrets)+1)}")
-    left.append(print_num(0, sum(right_secrets)+1))
+    # print(f"left constant {print_num(0, sum(right_secrets)+1)}")
+    # left.append(print_num(0, sum(right_secrets)+1))
 
-    print(f"right constant {print_num(0, sum(left_secrets))}")
-    right.append(print_num(0, sum(left_secrets)))
+    # print(f"right constant {print_num(0, sum(left_secrets))}")
+    # right.append(print_num(0, sum(left_secrets)))
 
-    print(left,)
-    print(right)
+    # print(left,)
+    # print(right)

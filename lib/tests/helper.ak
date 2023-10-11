@@ -1,133 +1,78 @@
-// use hidden_contract/helper
+use convert_expression/helper
 
-// test empty_prove_burn() {
-//   helper.prove_burn([], [], []) == True
-// }
+test empty_prove_burn() {
+  helper.prove_burn([], [], []) == True
+}
 
-// test single_burn() {
-//   helper.prove_burn(
-//     [1497],
-//     [#"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd"],
-//     [#"c904f095ab5451515064fc31ff7c818d36a9287d80b6e147d220c0cbf7019582"],
-//   ) == True
-// }
+test empty_prove_mint() {
+  helper.prove_mint([], []) == True
+}
 
-// test multiple_burn() {
-//   helper.prove_burn(
-//     [1497, 376],
-//     [
-//       #"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd",
-//       #"500a1641c43b3004a7a3394e2aa698d9f1292dab0c6d0b1f283a8c80978575c0",
-//     ],
-//     [
-//       #"c904f095ab5451515064fc31ff7c818d36a9287d80b6e147d220c0cbf7019582",
-//       #"76aa57bc1552eaf1f1494e8592cd4f218112848d0a047390ba8b5ba52515daaf",
-//     ],
-//   ) == True
-// }
+test single_burn() {
+  helper.prove_burn(
+    [751397636616587930],
+    // integers
+    [#"1a4bcc7afed2e17f491a3a2dffe7015bf77d3886c04cec607c546b62318e98bd"],
+    // names
+    [#"4154bdf08a85aa2f6ff215c7cf340de5399ca0818fc5cf2e133801bef62768f3"],
+  ) == // proofs
+  True
+}
 
-// test empty_prove_mint() {
-//   helper.prove_mint([], []) == True
-// }
+test double_burn() {
+  helper.prove_burn(
+    [85555417923071379, 32181992827649166],
+    [
+      #"b7c59b1b6472ba06135df233de871a15c725bd720a8c60d3e5585408a449df33",
+      #"a2bf33326cb22ecff093d8a462a3783706198773b8d9ddf8c07513cbae4d92fb",
+    ],
+    [
+      #"69ccb7bddeca35b2d69c39a75e1927f53a053b2292def8d144b61de9a62a8eac",
+      #"3e5c625ce895cd7b8fb57f0172cb3d0fa353298d48bc71e0750a81fd51dad2eb",
+    ],
+  ) == True
+}
 
-// test single_mint() {
-//   helper.prove_mint(
-//     [1497],
-//     [#"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd"],
-//   ) == True
-// }
+test triple_burn() {
+  helper.prove_burn(
+    [250602099261951288, 233848391693077322, 710501442004688010],
+    [
+      #"0f65c9a118210e1f18996e3b9332f38a745c41c561d39513d07425b8e236fbf0",
+      #"09148c9afd9aca46be584fa3cb38d2ce497db19277036a81ee8fc9a9db51c60a",
+      #"0ac3f8d3c9eab7ecf20a88d3c81feaec12a61a357bfb4ca3daf273307e958805",
+    ],
+    [
+      #"b0de144bcc4b6c6525d90bdccdd18f25ea1d6dbb98f8ab33c4a3c2950faa1876",
+      #"d12abeee69f882517f84bf8dd088efa9eb0b57c84356cfaf8a6c53a60e59ba35",
+      #"990c797f35c10a7661273203bec51539a98b3dd2c60817c4811ec7ed693a8f83",
+    ],
+  ) == True
+}
 
-// test multiple_mint() {
-//   helper.prove_mint(
-//     [1497, 376],
-//     [
-//       #"5fdc6c8d358c47aee3b6237764af9d2f3ae5ca8e406a9511f7a29f01ab9cc2bd",
-//       #"500a1641c43b3004a7a3394e2aa698d9f1292dab0c6d0b1f283a8c80978575c0",
-//     ],
-//   ) == True
-// }
+test single_mint() {
+  helper.prove_mint(
+    [751397636616587930],
+    [#"1a4bcc7afed2e17f491a3a2dffe7015bf77d3886c04cec607c546b62318e98bd"],
+  ) == True
+}
 
-// test empty_list_of_mints_and_burns() {
-//   helper.list_pow_mod([]) == helper.list_pow_mod([])
-// }
+test double_mint() {
+  helper.prove_mint(
+    [85555417923071379, 32181992827649166],
+    [
+      #"b7c59b1b6472ba06135df233de871a15c725bd720a8c60d3e5585408a449df33",
+      #"a2bf33326cb22ecff093d8a462a3783706198773b8d9ddf8c07513cbae4d92fb",
+    ],
+  ) == True
+}
 
-// test list_of_mints_and_burns() {
-//   let left =
-//     [2835595436209736255, 2997532379697512730, 8494482003699531620]
-//   let right =
-//     [4702576305290162895, 4812563786666023419, 8848806375754731735]
-//   helper.list_pow_mod(left) == helper.list_pow_mod(right)
-// }
-
-// test list_of_only_mints() {
-//   let left =
-//     [3688371627213947, 3875644491920815627, 6710886400]
-//   let right =
-//     [2167002592491288770, 8929118933177322057]
-//   helper.list_pow_mod(left) == helper.list_pow_mod(right)
-// }
-
-// test list_for_extraction() {
-//   let left =
-//     [4379166847518509761, 3967284141675633404]
-//   let right =
-//     [
-//       7478865128743298826, 7422722409375585999, 6459881879562207830,
-//       8111245232363053438,
-//     ]
-//   helper.list_pow_mod(left) == helper.list_pow_mod(right)
-// }
-
-// test list_for_extraction2() {
-//   let left =
-//     [664, 387]
-//   let right =
-//     [23, 451, 1039, 1539]
-//   helper.list_pow_mod(left) != helper.list_pow_mod(right)
-// }
-
-// test correct_to_int() {
-//   helper.to_int(#"acab") == 44203
-// }
-
-// test correct_int_to_hash() {
-//   helper.int_to_hash(0) == #"f9e2eaaa42d9fe9e558a9b8ef1bf366f190aacaa83bad2641ee106e9041096e4"
-// }
-
-// test prove_good_mint() {
-//   let ints =
-//     [8389463945806726181, 6262004490321260847, 1711566370269089011]
-//   let strings =
-//     [
-//       #"451c070dd856ff6bf3c3e869fcbc9c98f676ba74596fb08cd6ffaee2933ffec3",
-//       #"d441cd540b03015e009a12422724c7bdb0abcc6650c4bf64b4ffc2f3926cfde3",
-//       #"d47b6296253ba209ac46ad9bc9582c665822dee0f44632d712eda963607267b1",
-//     ]
-//   helper.prove_mint(ints, strings)
-// }
-
-// test prove_good_burn() {
-//   let ints =
-//     [6377360274566370311, 4367313094201873331, 4380394588557739228]
-//   let strings =
-//     [
-//       #"695de38f8ee894460425b5647244f2e0a0439c9ee50ac7a2cf75f4c2fd89ec20",
-//       #"fae9896f3c3e203be99dccb8bf434525b2de3dec2e749663babb93838224f53f",
-//       #"70f260b669183de039aca179d258870481cae089397292d4d4d992f10b8a46fb",
-//     ]
-//   let proofs =
-//     [
-//       #"460ca6001d6762a776099fe1bf596edb131ae7642f5edfb27bbb71447784d0a9",
-//       #"22ee6873d2dfd3be7d968100d019e92c7d31d7dcf3128c4a5466a9903de0929d",
-//       #"a08f05aaff350f6891724733150af4a88c7d361208f274ad49873c4090784850",
-//     ]
-//   helper.prove_burn(ints, strings, proofs)
-// }
-
-// test list_power_mod_good() {
-//   let l =
-//     [91, 499319296258426758, 371533020831606146, 637880808202577067]
-//   let r =
-//     [1508733114072609971, 11220000091]
-//   helper.list_power_mod(l) == helper.list_power_mod(r)
-// }
+test triple_mint() {
+  helper.prove_mint(
+    [250602099261951288, 233848391693077322, 710501442004688010],
+    [
+      #"0f65c9a118210e1f18996e3b9332f38a745c41c561d39513d07425b8e236fbf0",
+      #"09148c9afd9aca46be584fa3cb38d2ce497db19277036a81ee8fc9a9db51c60a",
+      #"0ac3f8d3c9eab7ecf20a88d3c81feaec12a61a357bfb4ca3daf273307e958805",
+    ],
+  ) == True
+}

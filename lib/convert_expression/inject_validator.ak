@@ -83,8 +83,6 @@ pub fn inject_validation(
       redeemer.right_names,
       redeemer.name_proofs,
     ),
-    // only spend 1 input
-    count.inputs_by_addr(tx.inputs, script_addr, 1),
     // only cont 1 output
     count.outputs_by_addr(tx.outputs, script_addr, 1),
     // must inject at least 1 ADA into the contract

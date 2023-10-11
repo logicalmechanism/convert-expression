@@ -1,16 +1,12 @@
 use aiken/transaction.{ScriptContext, Spend}
 use assist/find
 use assist/values
-// use convert_expression/extract_validator
+use convert_expression/extract_validator
 use convert_expression/inject_validator
 use convert_expression/types.{Datum, Extract, Inject, Redeemer}
 
 validator(start_pid: ByteArray, start_tkn: ByteArray) {
-  fn params(
-    datum: Datum,
-    redeemer: Redeemer,
-    context: ScriptContext,
-  ) -> Bool {
+  fn params(datum: Datum, redeemer: Redeemer, context: ScriptContext) -> Bool {
     when context.purpose is {
       Spend(output_reference) -> {
         let tx = context.transaction
@@ -44,13 +40,12 @@ validator(start_pid: ByteArray, start_tkn: ByteArray) {
               // datum cant change
               datum == cont_datum,
               // other validation logic
-              // extract_validator.extract_validation(
-              //   extract_data,
-              //   tx,
-              //   this_input,
-              //   datum.pid,
-              // ),
-              True
+              extract_validator.extract_validation(
+                extract_data,
+                tx,
+                this_input,
+                datum.pid,
+              ),
             }
         }
       }

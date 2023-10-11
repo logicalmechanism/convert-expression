@@ -40,8 +40,8 @@ pub fn inject_validation(
     list.push(redeemer.right_ints, right_constant_term)
       |> list.push(public_constant)
   // calculate length at most 1 time
-  let mint_name_length = list.length(redeemer.left_names)
-  let burn_name_length = list.length(redeemer.right_names)
+  let left_name_length = list.length(redeemer.left_names)
+  let right_name_length = list.length(redeemer.right_names)
   // calculate the power mods
   let powmod_leftside = maths.list_powmod(complete_leftside, types.g, types.q)
   let powmod_rightside = maths.list_powmod(complete_rightside, types.g, types.q)
@@ -64,13 +64,13 @@ pub fn inject_validation(
       fn(n) { minting.exact(mint, pid, n, -1) == True },
     )?,
     // logical mints and burns
-    list.length(redeemer.left_ints) == mint_name_length,
+    list.length(redeemer.left_ints) == left_name_length,
     // logical mints and burns
-    list.length(redeemer.right_ints) == burn_name_length,
+    list.length(redeemer.right_ints) == right_name_length,
     // all burns must have proofs
-    burn_name_length == list.length(redeemer.name_proofs),
+    right_name_length == list.length(redeemer.name_proofs),
     // injections required at least 2 mints
-    mint_name_length >= 2,
+    left_name_length >= 2,
     // cant hide mints or burns
     list.length(mint) == list.length(
       list.concat(redeemer.left_names, redeemer.right_names),
@@ -88,6 +88,6 @@ pub fn inject_validation(
     // only cont 1 output
     count.outputs_by_addr(tx.outputs, script_addr, 1),
     // must inject at least 1 ADA into the contract
-    redeemer.syringe >= mint_name_length * 1000000,
+    redeemer.syringe >= left_name_length * 1000000,
   }
 }

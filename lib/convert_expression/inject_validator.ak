@@ -56,12 +56,12 @@ pub fn inject_validation(
     // everything being minted is minted
     list.all(
       redeemer.left_names,
-      fn(n) { minting.exact(mint, pid, n, 1) == True },
+      fn(n) { minting.exact(mint, pid, n, -1) == True },
     )?,
     // everything being burned is burned
     list.all(
       redeemer.right_names,
-      fn(n) { minting.exact(mint, pid, n, -1) == True },
+      fn(n) { minting.exact(mint, pid, n, 1) == True },
     )?,
     // logical mints and burns
     list.length(redeemer.left_ints) == left_name_length,

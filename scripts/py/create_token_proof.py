@@ -6,8 +6,8 @@ import secrets
 g = 2
 r = 91
 c = 561
-q = 9223372036854775783
-qq = 3000029
+q = 9_223_372_036_854_775_783
+qq = 3_000_029
 
 def from_int(integer):
     base_256 = []
@@ -55,7 +55,7 @@ def get_proof_and_tkn(public_number):
         tval = int(token_name, 16)
         
         # check if the name condition is correct
-        if (tval % pmod) % qq == 0:
+        if tval % pmod % qq == 0:
             return s_hash, token_name
 
 def pub_num(value, secret):
@@ -71,10 +71,25 @@ def create_token(value):
     return secret_number, public_number, token_name, proof
 
 if __name__ == "__main__":
+    
     value = secrets.randbelow(9876543210) + 1000000 # this is the lovelace amount
-    print(f"The hidden lovelace value is {value}")
+
+    import time
+    start_time = time.time()
+    print(f"The hidden value is {value/1000000} ₳")
     secret_number, public_number, token_name, proof = create_token(value)
     print(f'The secret number is {secret_number}')
     print(f'\nThe public number is {public_number}')
     print(f'The token name is {token_name}')
     print(f'The proof is {proof}')
+    
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} seconds")
+    
+    import timeit
+
+    # n = 100
+    # execution_time = timeit.timeit(lambda: create_token(value), number=n)
+    # print(f"Average execution time: {execution_time} seconds")
+    # print(f"Average execution time per run: {execution_time / n} seconds")

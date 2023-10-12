@@ -15,15 +15,13 @@ pub fn inject_validation(
   pid: PolicyId,
 ) -> Bool {
   let this_value = this_input.output.value
-  let script_addr = this_input.output.address
+  let this_addr = this_input.output.address
   // this includes mint and burned tokens
   let mint =
     tx.mint
       |> value.from_minted_value()
       |> value.flatten()
-  // the publicly known constant
-  let public_constant = types.r + types.c * redeemer.syringe
-  // add whats being validated to the injected amt
+  // add the injection amount to the validating value
   let cont_value =
     value.add(
       this_value,
@@ -35,10 +33,11 @@ pub fn inject_validation(
   let left_constant_term = types.r * ( redeemer.left_constant + 1 )
   let complete_leftside = list.push(redeemer.left_ints, left_constant_term)
   // right side
+  let right_public_constant = types.r + types.c * redeemer.syringe
   let right_constant_term = types.r * redeemer.right_constant
   let complete_rightside =
     list.push(redeemer.right_ints, right_constant_term)
-      |> list.push(public_constant)
+      |> list.push(right_public_constant)
   // calculate length at most 1 time
   let left_name_length = list.length(redeemer.left_names)
   let right_name_length = list.length(redeemer.right_names)
@@ -46,13 +45,13 @@ pub fn inject_validation(
   let powmod_leftside = maths.list_powmod(complete_leftside, types.g, types.q)
   let powmod_rightside = maths.list_powmod(complete_rightside, types.g, types.q)
   and {
-    // mint and burn constant check
+    // force the left and right constants to be bound by q
     redeemer.left_constant < types.q,
     redeemer.right_constant < types.q,
     // transformation equation
     powmod_leftside == powmod_rightside,
     // conservation equation
-    payout.exact(script_addr, cont_value, tx.outputs),
+    payout.exact(this_addr, cont_value, tx.outputs),
     // everything being minted is minted
     list.all(
       redeemer.left_names,
@@ -84,6 +83,6 @@ pub fn inject_validation(
       redeemer.name_proofs,
     ),
     // only cont 1 output
-    count.outputs_by_addr(tx.outputs, script_addr, 1),
+    count.outputs_by_addr(tx.outputs, this_addr, 1),
   }
 }

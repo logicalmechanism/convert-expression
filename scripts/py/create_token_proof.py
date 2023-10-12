@@ -39,12 +39,15 @@ def print_token(txHash):
 
 def get_proof_and_tkn(public_number):
     # public known number hash
-    pmod = powmod(public_number)
-    num_hash = from_int(pmod)
+    # pmod = powmod(public_number)
+    # num_hash = from_int(pmod)
+    
+    pmod = public_number
+    num_hash = from_int(public_number)
     
     while True:
         # find a secret that works
-        secret = secrets.randbelow(pow(2,63)-1)
+        secret = secrets.randbelow(pow(2,64)-1)
 
         s_hash = print_hex(secret)
         
@@ -65,14 +68,18 @@ def powmod(value):
     return pow(g, value, q)
 
 def create_token(value):
-    secret_number = secrets.randbelow(pow(10,16))        # this is lambda value
+    secret_number = secrets.randbelow(pow(10,17))        # this is lambda value
     public_number = pub_num(value, secret_number)        # this is what is publicily known
+    if public_number >= pow(2, 64):
+        print("Public Number Is Too Large, recalculating")
+        return create_token(value)
     proof, token_name = get_proof_and_tkn(public_number) # the proof for the token name
     return secret_number, public_number, token_name, proof
 
 if __name__ == "__main__":
     
-    value = secrets.randbelow(9876543210) + 1000000 # this is the lovelace amount
+    # this is the lovelace amount
+    value = secrets.randbelow(9_876_543_456_789) + 1000000 
 
     import time
     start_time = time.time()
@@ -91,5 +98,5 @@ if __name__ == "__main__":
 
     # n = 100
     # execution_time = timeit.timeit(lambda: create_token(value), number=n)
-    # print(f"Average execution time: {execution_time} seconds")
+    # print(f"Total execution time: {execution_time} seconds")
     # print(f"Average execution time per run: {execution_time / n} seconds")

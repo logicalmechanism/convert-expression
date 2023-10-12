@@ -85,7 +85,5 @@ pub fn inject_validation(
     ),
     // only cont 1 output
     count.outputs_by_addr(tx.outputs, script_addr, 1),
-    // must inject at least 1 ADA into the contract
-    redeemer.syringe >= left_name_length * 1000000,
   }
 }

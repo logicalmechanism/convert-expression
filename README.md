@@ -18,7 +18,8 @@ $$K_{j} = \sum_{j=0}^{M} \lambda_{j}$$
 
 and the token name equation
 
-$$n = H(H(v)+m)$$
+$$v = g^{z_{i}} \mod q$$
+$$n = H(v + m)$$
 
 $$n \mod v \mod q' = 0$$
 

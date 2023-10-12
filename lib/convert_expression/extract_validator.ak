@@ -67,7 +67,9 @@ pub fn extract_validation(
     // logical mints and burns
     list.length(redeemer.right_ints) == right_name_length,
     // must burn something to extract value
-    left_name_length >= 1,
+    left_name_length >= 2,
+    // must mint something to extract value
+    right_name_length >= 2,
     // all burns must have proofs
     left_name_length == list.length(redeemer.name_proofs),
     // no mint or burn is unaccounted

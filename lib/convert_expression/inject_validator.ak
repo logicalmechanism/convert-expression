@@ -55,25 +55,28 @@ pub fn inject_validation(
     // everything being minted is minted
     list.all(
       redeemer.left_names,
-      fn(n) { minting.exact(mint, pid, n, -1) == True },
+      fn(n) { minting.exact(mint, pid, n, 1) == True },
     )?,
     // everything being burned is burned
     list.all(
       redeemer.right_names,
-      fn(n) { minting.exact(mint, pid, n, 1) == True },
+      fn(n) { minting.exact(mint, pid, n, -1) == True },
     )?,
-    // logical mints and burns
+    // logical mints
     list.length(redeemer.left_ints) == left_name_length,
-    // logical mints and burns
+    // logical burns
     list.length(redeemer.right_ints) == right_name_length,
     // all burns must have proofs
     right_name_length == list.length(redeemer.name_proofs),
     // injections required at least 2 mints
     left_name_length >= 2,
+    // burn nothing or at least two
+    or {
+      right_name_length == 0,
+      right_name_length >= 2,
+    },
     // cant hide mints or burns
-    list.length(mint) == list.length(
-      list.concat(redeemer.left_names, redeemer.right_names),
-    ),
+    list.length(mint) == left_name_length + right_name_length,
     // prove correct mints names
     helper.prove_mint(redeemer.left_ints, redeemer.left_names),
     // prove correct burn names

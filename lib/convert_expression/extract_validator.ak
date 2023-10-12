@@ -21,9 +21,7 @@ pub fn extract_validation(
     tx.mint
       |> value.from_minted_value()
       |> value.flatten()
-  // the publicly known constant
-  let public_constant = types.r + types.c * redeemer.syringe
-  // add whats being validated to the injected amt
+  // subtract the extraction amount from the validating value
   let cont_value =
     value.add(
       this_value,
@@ -35,10 +33,12 @@ pub fn extract_validation(
   let left_constant_term = types.r * ( redeemer.left_constant + 1 )
   let complete_leftside = list.push(redeemer.left_ints, left_constant_term)
   // right side
+  // the publicly known constant
+  let right_public_constant = types.r + types.c * redeemer.syringe
   let right_constant_term = types.r * redeemer.right_constant
   let complete_rightside =
     list.push(redeemer.right_ints, right_constant_term)
-      |> list.push(public_constant)
+      |> list.push(right_public_constant)
   // calculate length at most 1 time
   let left_name_length = list.length(redeemer.left_names)
   let right_name_length = list.length(redeemer.right_names)
@@ -46,8 +46,8 @@ pub fn extract_validation(
   let powmod_leftside = maths.list_powmod(complete_leftside, types.g, types.q)
   let powmod_rightside = maths.list_powmod(complete_rightside, types.g, types.q)
   and {
-    (redeemer.left_constant < types.q)?,
-    (redeemer.right_constant < types.q)?,
+    redeemer.left_constant < types.q,
+    redeemer.right_constant < types.q,
     // transformation equation
     powmod_leftside == powmod_rightside,
     // conservation equation
@@ -55,16 +55,16 @@ pub fn extract_validation(
     // everything being minted is minted
     list.all(
       redeemer.left_names,
-      fn(n) { minting.exact(mint, pid, n, 1) == True },
+      fn(n) { minting.exact(mint, pid, n, -1) == True },
     )?,
     // everything being burned is burned
     list.all(
       redeemer.right_names,
-      fn(n) { minting.exact(mint, pid, n, -1) == True },
+      fn(n) { minting.exact(mint, pid, n, 1) == True },
     )?,
-    // logical mints and burns
+    // logical burns
     list.length(redeemer.left_ints) == left_name_length,
-    // logical mints and burns
+    // logical mints
     list.length(redeemer.right_ints) == right_name_length,
     // must burn something to extract value
     left_name_length >= 2,
@@ -73,9 +73,7 @@ pub fn extract_validation(
     // all burns must have proofs
     left_name_length == list.length(redeemer.name_proofs),
     // no mint or burn is unaccounted
-    list.length(mint) == list.length(
-      list.concat(redeemer.left_names, redeemer.right_names),
-    ),
+    list.length(mint) == left_name_length + right_name_length,
     // prove correct mints names
     helper.prove_mint(redeemer.right_ints, redeemer.right_names),
     // prove correct burn names
